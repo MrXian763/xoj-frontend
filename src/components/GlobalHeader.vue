@@ -45,11 +45,12 @@ import { useStore } from "vuex";
 const router = useRouter();
 const store = useStore();
 
-setTimeout(() => {
-  store.dispatch("user/getLoginUser", {
-    userName: "紫菜",
-  });
-}, 3000);
+// setTimeout(() => {
+//   store.dispatch("user/getLoginUser", {
+//     userName: "紫菜",
+//     role: "admin",
+//   });
+// }, 3000);
 
 // 默认主页
 const selectedKeys = ref(["/"]);
