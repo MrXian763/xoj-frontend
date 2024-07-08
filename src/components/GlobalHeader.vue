@@ -1,10 +1,5 @@
 <template>
-  <a-row
-    id="globalHeader"
-    class="grid-demo"
-    style="margin-bottom: 16px"
-    align="center"
-  >
+  <a-row id="globalHeader" class="grid-demo" align="center" :wrap="false">
     <a-col flex="350px">
       <div class="title-bar">
         <img class="logo" src="../assets/universityLogo.png" />
