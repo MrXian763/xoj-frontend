@@ -1,12 +1,11 @@
 <template>
   <a-row id="globalHeader" class="grid-demo" align="center" :wrap="false">
-    <a-col flex="350px">
+    <a-col flex="555px">
       <div class="title-bar">
         <img class="logo" src="../assets/universityLogo.png" />
-        <div class="title">广理编协 OJ 系统</div>
       </div>
     </a-col>
-    <a-col flex="auto">
+    <a-col flex="auto" class="right-align">
       <a-menu
         mode="horizontal"
         :selected-keys="selectedKeys"
@@ -23,7 +22,7 @@
         </a-menu-item>
       </a-menu>
     </a-col>
-    <a-col flex="100px">
+    <a-col flex="200px" class="user">
       <div>
         {{ store.state?.user?.loginUser?.userName ?? "未登录" }}
       </div>
@@ -88,8 +87,15 @@ const doMenuClick = (key: string) => {
 </script>
 
 <style scoped>
+.right-align {
+  display: flex;
+  justify-content: flex-end;
+  text-align: right;
+}
+
 .title-bar {
   display: flex;
+  justify-content: center;
   align-items: center;
 }
 
@@ -100,5 +106,11 @@ const doMenuClick = (key: string) => {
 
 .logo {
   height: 48px;
+}
+
+.user {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
