@@ -18,7 +18,7 @@
           disabled
         >
         </a-menu-item>
-        <a-menu-item v-for="item in routes" :key="item.path">
+        <a-menu-item v-for="item in visibleRoutes" :key="item.path">
           {{ item.name }}
         </a-menu-item>
       </a-menu>
@@ -34,21 +34,42 @@
 <script setup lang="ts">
 import { routes } from "@/router/routes";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import checkAccess from "@/access/checkAccess";
+import ACCESS_ENUM from "@/access/accessEnum";
 
 const router = useRouter();
 const store = useStore();
 
-// setTimeout(() => {
-//   store.dispatch("user/getLoginUser", {
-//     userName: "紫菜",
-//     role: "admin",
-//   });
-// }, 3000);
+const loginUser = store.state.user.loginUser;
+
+setTimeout(() => {
+  store.dispatch("user/getLoginUser", {
+    userName: "紫菜管理员",
+    userRole: ACCESS_ENUM.ADMIN,
+  });
+}, 3000);
 
 // 默认主页
 const selectedKeys = ref(["/"]);
+
+// 展示在菜单的路由数组
+const visibleRoutes = computed(() => {
+  return routes.filter((item, index) => {
+    // 过滤掉隐藏的菜单
+    if (item.meta?.hideInMenu) {
+      return false;
+    }
+    // 根据权限显示菜单
+    if (
+      !checkAccess(store.state.user.loginUser, item?.meta?.access as string)
+    ) {
+      return false;
+    }
+    return true;
+  });
+});
 
 // 路由跳转后，更新选中的菜单项
 router.afterEach((to, from, failure) => {
