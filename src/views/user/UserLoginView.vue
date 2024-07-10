@@ -1,3 +1,4 @@
+<!--用户登录页-->
 <template>
   <div id="userLoginView">
     <div class="login-container">
@@ -16,6 +17,7 @@
             placeholder="请输入密码"
           />
         </a-form-item>
+        <a class="register-link" @click="goToRegister">没有账号？点击注册</a>
         <a-form-item>
           <a-button type="primary" html-type="submit" block>登录</a-button>
         </a-form-item>
@@ -59,6 +61,16 @@ const handleSubmit = async () => {
     message.error("登录失败，" + res.message);
   }
 };
+
+/**
+ * 跳转到注册页
+ */
+const goToRegister = () => {
+  router.push({
+    path: "/user/register",
+    replace: true,
+  });
+};
 </script>
 
 <style>
@@ -77,6 +89,14 @@ const handleSubmit = async () => {
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+}
+
+.register-link {
+  font-size: 12px;
+  color: #1890ff;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: right;
 }
 
 h2 {
