@@ -1,12 +1,20 @@
 <template>
   <div id="app">
-    <basic-layout />
+    <template v-if="route.path.startsWith('/user')">
+      <router-view />
+    </template>
+    <template v-else>
+      <basic-layout />
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
 import BasicLayout from "@/layouts/BasicLayout.vue";
 import { onMounted } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 onMounted(() => {
   doInit();
