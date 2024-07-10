@@ -1,7 +1,11 @@
 <template>
   <div id="userLayout">
     <a-layout style="min-height: 100vh">
-      <a-layout-header class="header">用户布局</a-layout-header>
+      <a-layout-header class="header">
+        <div class="title-bar">
+          <img class="logo" src="../assets/universityLogo.png" />
+        </div>
+      </a-layout-header>
       <a-layout-content class="content">
         <router-view />
       </a-layout-content>
@@ -28,9 +32,8 @@
 }
 
 #userLayout .content {
-  background: linear-gradient(to right, #bbb, #fff);
-  margin-bottom: 16px;
-  padding: 20px;
+  text-align: center;
+  background-color: #f0f8ff;
 }
 
 #userLayout .footer {
@@ -41,5 +44,16 @@
   left: 0;
   right: 0;
   text-align: center;
+}
+
+.title-bar {
+  width: 555px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  height: 48px;
 }
 </style>

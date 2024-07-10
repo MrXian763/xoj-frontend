@@ -41,15 +41,6 @@ import ACCESS_ENUM from "@/access/accessEnum";
 const router = useRouter();
 const store = useStore();
 
-const loginUser = store.state.user.loginUser;
-
-setTimeout(() => {
-  store.dispatch("user/getLoginUser", {
-    userName: "紫菜管理员",
-    userRole: ACCESS_ENUM.ADMIN,
-  });
-}, 3000);
-
 // 默认主页
 const selectedKeys = ref(["/"]);
 
