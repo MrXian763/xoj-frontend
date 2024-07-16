@@ -1,6 +1,10 @@
 <!-- 代码编辑器页 -->
 <template>
-  <div id="code-editor" ref="codeEditorRef" style="min-height: 400px" />
+  <div
+    id="code-editor"
+    ref="codeEditorRef"
+    style="min-height: 666px; min-width: 1000px"
+  />
   <!--  <a-button @click="fillValue">填充值</a-button>-->
 </template>
 <script setup lang="ts">
