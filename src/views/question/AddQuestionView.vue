@@ -11,9 +11,9 @@
         :rules="[{ match: /one/, message: '必须选择一个难度' }]"
       >
         <a-radio-group v-model="form.difficulty">
-          <a-radio value="1">简单</a-radio>
-          <a-radio value="2">中等</a-radio>
-          <a-radio value="3">困难</a-radio>
+          <a-radio :value="1">简单</a-radio>
+          <a-radio :value="2">中等</a-radio>
+          <a-radio :value="3">困难</a-radio>
         </a-radio-group>
       </a-form-item>
       <a-form-item field="tags" label="标签">
@@ -114,11 +114,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import MdEditor from "@/components/MdEditor.vue";
 import CodeEditor from "@/components/CodeEditor.vue";
 import { QuestionControllerService } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+// 如果地址包含 update，则为更新题目页面，否则为创建题目页面
+const updatePage = route.path.includes("update");
 
 const form = ref({
   title: "",
@@ -138,6 +143,52 @@ const form = ref({
     timeLimit: 1000,
   },
 });
+
+onMounted(async () => {
+  await loadData();
+});
+
+const loadData = async () => {
+  const id = route.query.id;
+  if (!id) {
+    // 不是修改题目信息则不加载数据
+    return;
+  }
+  const res = await QuestionControllerService.getQuestionByIdUsingGet(
+    id as any
+  );
+  if (res.code === 0) {
+    message.success("加载成功");
+    form.value = res.data as any;
+    if (!form.value.judgeCase) {
+      form.value.judgeCase = [
+        {
+          input: "",
+          output: "",
+        },
+      ];
+    } else {
+      form.value.judgeCase = JSON.parse(form.value.judgeCase as any);
+    }
+    if (!form.value.judgeConfig) {
+      form.value.judgeConfig = {
+        memoryLimit: 1000,
+        stackLimit: 1000,
+        timeLimit: 1000,
+      };
+    } else {
+      form.value.judgeConfig = JSON.parse(form.value.judgeConfig as any);
+    }
+    if (!form.value.tags) {
+      form.value.tags = [];
+    } else {
+      form.value.tags = JSON.parse(form.value.tags as any);
+    }
+    onAnswerChange(form.value.answer);
+  } else {
+    message.error("加载失败" + res.message);
+  }
+};
 
 /**
  * 新增测试用例
@@ -165,13 +216,25 @@ const handleDelete = (index: number) => {
  * 表单提交
  */
 const doSubmit = async () => {
-  const res = await QuestionControllerService.addQuestionUsingPost(
-    form.value as any
-  );
-  if (res.code === 0) {
-    message.success("创建成功");
+  // 区分更新还是创建
+  if (updatePage) {
+    const res = await QuestionControllerService.updateQuestionUsingPost(
+      form.value
+    );
+    if (res.code === 0) {
+      message.success("更新成功");
+    } else {
+      message.error("更新失败" + res.message);
+    }
   } else {
-    message.error("创建失败" + res.message);
+    const res = await QuestionControllerService.addQuestionUsingPost(
+      form.value as any
+    );
+    if (res.code === 0) {
+      message.success("创建成功");
+    } else {
+      message.error("创建失败" + res.message);
+    }
   }
 };
 
