@@ -110,7 +110,7 @@ const doUpdate = (question: Question) => {
 
 const columns = [
   {
-    title: "id",
+    title: "题目编号",
     dataIndex: "id",
   },
   {
