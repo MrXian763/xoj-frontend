@@ -107,6 +107,10 @@ const columns = [
     dataIndex: "tags",
   },
   {
+    title: "题目内容",
+    dataIndex: "content",
+  },
+  {
     title: "创建者id",
     dataIndex: "userId",
   },
