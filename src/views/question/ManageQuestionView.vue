@@ -7,9 +7,10 @@
       :pagination="{
         showTotal: true,
         pageSize: searchParams.pageSize,
-        current: searchParams.pageNum,
+        current: searchParams.current,
         total,
       }"
+      @page-change="onPageChange"
     >
       <template #optional="{ record }">
         <a-space>
@@ -27,7 +28,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { Question, QuestionControllerService } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
@@ -38,12 +39,23 @@ const dataList = ref([]);
 const total = ref(0);
 const searchParams = ref({
   pageSize: 10,
-  pageNum: 1,
+  current: 1,
 });
 
 onMounted(async () => {
   await loadData();
 });
+
+/**
+ * 改变页码
+ * @param current 当前页码
+ */
+const onPageChange = (current: number) => {
+  searchParams.value = {
+    ...searchParams.value,
+    current: current,
+  };
+};
 
 /**
  * 加载数据
@@ -59,6 +71,13 @@ const loadData = async () => {
     message.error("加载失败" + res.message);
   }
 };
+
+/**
+ * 监听搜索参数变化，参数变化触发重新加载数据
+ */
+watchEffect(async () => {
+  await loadData();
+});
 
 /**
  * 删除题目
