@@ -53,6 +53,7 @@ const handleSubmit = async () => {
   console.log(store.state.user.loginUser);
   // 登录成功，跳转到主页
   if (res.code === 0) {
+    message.success("登录成功");
     router.push({
       path: "/",
       replace: true,
