@@ -25,12 +25,12 @@ const codeEditor = ref();
 
 watch(
   () => props.language,
-  (newLanguage) => {
+  () => {
     if (codeEditor.value) {
-      const model = codeEditor.value.getModel();
-      if (model) {
-        model.updateOptions({ language: newLanguage });
-      }
+      monaco.editor.setModelLanguage(
+        toRaw(codeEditor.value).getModel(),
+        props.language
+      );
     }
   }
 );
