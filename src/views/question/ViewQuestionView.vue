@@ -88,7 +88,9 @@
         />
         <a-divider size="0" />
         <div style="display: flex; justify-content: flex-end">
-          <a-button type="primary" @click="onSubmitCode">提交代码</a-button>
+          <a-button type="primary" @click="onSubmitCode" :disabled="bandClick"
+            >提交代码</a-button
+          >
         </div>
       </a-col>
     </a-row>
@@ -106,6 +108,8 @@ import CodeEditor from "@/components/CodeEditor.vue";
 import MdViewer from "@/components/MdViewer.vue";
 
 const question = ref<QuestionVO>();
+
+const bandClick = ref(false);
 
 interface Props {
   id: string;
@@ -153,6 +157,7 @@ const onChangeCode = (v: string) => {
  * 提交答案
  */
 const onSubmitCode = async () => {
+  bandClick.value = true;
   if (!question.value?.id) {
     return;
   }
@@ -165,6 +170,9 @@ const onSubmitCode = async () => {
   } else {
     message.error("提交失败" + res.message);
   }
+  setTimeout(() => {
+    bandClick.value = false; // 操作完成后重新启用按钮
+  }, 3000); // 3秒后
 };
 
 /**
