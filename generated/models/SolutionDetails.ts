@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type SolutionDetails = {
+    id?: number;
     userId: number;
     problemId?: number;
     code?: string;
@@ -14,6 +15,8 @@ export type SolutionDetails = {
     viewsCount: number;
     userNickName: string;
     userAvatarUrl: string;
+    isLike: boolean;
+    isFavorite: boolean;
     publishTime: Date;
     modifyTime?: Date;
 };

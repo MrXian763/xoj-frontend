@@ -8,17 +8,17 @@
       align="right"
     >
       <template #actions>
-        <span key="heart" class="action" @click="onLikeChange">
-          <span v-if="like">
+        <span key="heart" class="action" @click="onLikeChange(item)">
+          <span v-if="item.isLike">
             <IconHeartFill :style="{ color: '#f53f3f' }" />
           </span>
           <span v-else>
             <IconHeart />
           </span>
-          {{ item.likesCount + (like ? 1 : 0) }}
+          {{ item.likesCount }}
         </span>
-        <span key="star" class="action" @click="onStarChange">
-          <span v-if="star">
+        <span key="star" class="action" @click="onStarChange(item)">
+          <span v-if="item.isFavorite">
             <IconStarFill
               style="
                  {
@@ -30,11 +30,12 @@
           <span v-else>
             <IconStar />
           </span>
-          {{ item.favoritesCount + (star ? 1 : 0) }}
+          {{ item.favoritesCount }}
         </span>
         <span key="reply" class="action" @click="showDetails(item)">
-          <IconMessage /> 查看详情
+          <IconMessage /> {{ item.commentsCount }}
         </span>
+        <a-button type="text" @click="showDetails(item)">查看</a-button>
       </template>
       <template #avatar>
         <a-avatar>
@@ -69,21 +70,53 @@ const solutionDetails = ref<SolutionDetails[]>([]);
 
 const nullSolutionDetails = ref(false);
 
-const like = ref(false);
-const star = ref(false);
-
 /**
  * 更改点赞数
  */
-const onLikeChange = () => {
-  like.value = !like.value;
+const onLikeChange = async (item: SolutionDetails) => {
+  item.isLike = !item.isLike;
+  item.likesCount = item.likesCount + (item.isLike ? 1 : -1);
+  const res = await myAxios.get(
+    "/question/solution-details/like-count/update",
+    {
+      params: {
+        id: item.id,
+        isLike: item.isLike,
+      },
+    }
+  );
+  if (res.status == 200) {
+    message.success("操作成功");
+  } else {
+    item.isLike = !item.isLike;
+    item.likesCount = item.likesCount + (item.isLike ? 1 : -1);
+    message.error("操作失败" + res.message);
+  }
 };
 
 /**
  * 更改收藏数
+ * @param item 题解数据
  */
-const onStarChange = () => {
-  star.value = !star.value;
+const onStarChange = async (item: SolutionDetails) => {
+  item.isFavorite = !item.isFavorite;
+  item.favoritesCount = item.favoritesCount + (item.isFavorite ? 1 : -1);
+  const res = await myAxios.get(
+    "/question/solution-details/favorite-count/update",
+    {
+      params: {
+        id: item.id,
+        isFavorite: item.isFavorite,
+      },
+    }
+  );
+  if (res.status == 200) {
+    message.success("操作成功");
+  } else {
+    item.isFavorite = !item.isFavorite;
+    item.favoritesCount = item.favoritesCount + (item.favoritesCount ? 1 : -1);
+    message.error("操作失败" + res.message);
+  }
 };
 
 /**
