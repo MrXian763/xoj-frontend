@@ -21,10 +21,10 @@
               </template>
               <MdViewer :value="question.content || ''" />
               <a-descriptions
-                title="运行限制"
                 bordered
                 column="1"
                 table-layout="fixed"
+                title="运行限制"
               >
                 <a-descriptions-item label="内存限制">
                   {{ question.judgeConfig?.memoryLimit }}
@@ -56,8 +56,8 @@
               </a-card-meta>
             </a-card>
           </a-tab-pane>
-          <a-tab-pane key="answer" title="题解" disabled>
-            暂未有人发布题解
+          <a-tab-pane key="answer" :title="solutionDetailsCountTitle">
+            <solution-details-card :questionId="question?.id" />
           </a-tab-pane>
           <a-tab-pane key="commitRecord" disabled>
             <template #title>提交记录</template>
@@ -70,33 +70,33 @@
             <a-select
               v-model="form.language"
               :style="{ width: '160px' }"
-              placeholder="编程语言"
               :trigger-props="{ autoFitPopupMinWidth: true }"
+              placeholder="编程语言"
             >
               <a-option>java</a-option>
-              <a-option>c</a-option>
-              <a-option>cpp</a-option>
-              <a-option>python</a-option>
-              <a-option>go</a-option>
+              <!--              <a-option>c</a-option>-->
+              <!--              <a-option>cpp</a-option>-->
+              <!--              <a-option>python</a-option>-->
+              <!--              <a-option>go</a-option>-->
             </a-select>
           </a-form-item>
         </a-form>
         <CodeEditor
-          :value="form.code"
-          :language="form.language"
           :handle-change="onChangeCode"
+          :language="form.language"
+          :value="form.code"
         />
         <a-divider size="0" />
         <div style="display: flex; justify-content: flex-end">
-          <a-button type="primary" @click="onSubmitCode" :disabled="bandClick"
-            >提交代码</a-button
-          >
+          <a-button :disabled="bandClick" type="primary" @click="onSubmitCode"
+            >提交代码
+          </a-button>
         </div>
       </a-col>
     </a-row>
   </div>
 </template>
-<script setup lang="ts">
+<script lang="ts" setup>
 import { onMounted, ref, withDefaults, defineProps, computed } from "vue";
 import {
   QuestionControllerService,
@@ -106,10 +106,17 @@ import {
 import message from "@arco-design/web-vue/es/message";
 import CodeEditor from "@/components/CodeEditor.vue";
 import MdViewer from "@/components/MdViewer.vue";
+import myAxios from "@/plugins/axios";
+import SolutionDetailsCard from "@/components/SolutionDetailsCard.vue";
 
 const question = ref<QuestionVO>();
 
 const bandClick = ref(false);
+
+const solutionDetailsCount = ref(0);
+let solutionDetailsCountTitle = ref(
+  "题解（" + solutionDetailsCount.value + "）"
+);
 
 interface Props {
   id: string;
@@ -121,6 +128,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 onMounted(async () => {
   await loadData();
+  await getSolutionDetails(); // 加载题解数量
 });
 
 /**
@@ -187,6 +195,21 @@ const passRate = computed(() => {
   const rate = (acceptedNum / submitNum) * 100;
   return `通过率：${rate.toFixed(2)}%`;
 });
+
+const getSolutionDetails = async () => {
+  const res = await myAxios.get("/question/solution-details/count", {
+    params: {
+      problemId: props.id,
+    },
+  });
+  if (res.status === 200) {
+    solutionDetailsCount.value = res.data.data;
+    solutionDetailsCountTitle.value =
+      "题解（" + solutionDetailsCount.value + "）";
+  } else {
+    message.error("加载题解数量失败" + res.message);
+  }
+};
 
 /**
  * 题目难度信息
